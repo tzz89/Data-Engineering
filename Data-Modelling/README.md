@@ -12,6 +12,27 @@
 4. Common data modelling pattern 
    1. production database -> Master Data (joined many DB) -> OLAP cubes -> Metrics
 5. Idempotent pipeline: Produces the same result regardless of when it is ran
+6. Dimensions can be additive (age) or non additive (users on web, users on android. They can have overlap)
+7. Enums are good for low to medium cardinality (eg < 40)
+   1. Built in data quality
+   2. Built in static fields
+   3. Built in documentation
+8. Flexible Schemas (eg other_properties column)
+   1. Having a Map column / JSON column
+   2. Poor space utilization as the 'header' is repeated
+9. Graph Modeling 
+   1.  Nodes usually have below schema
+       1. Identifier: String
+       2. Type String 
+       3. Properties: MAP<String, String>
+    2. Relationship usually have below schema   
+       1. edge_id (optional)
+       2. subject_identifier String (src)
+       3. subject_type Vertex_Type
+       4. object_identifier: String (dst)
+       5. Object_type: Vertex_Type
+       6. Edge_type: Edge_type
+       7. properties: MAP<String, String>
 
 
 ## DataTypes
@@ -49,7 +70,7 @@ Disadvantage: Huge size, Backfilling have to be day by day and not parallel
    
 Loading of type 2 tables can be done on the entire history or incrementally
 
-### Way 1
+### Way 1 (DO NOT USE - will not work if there are repeated streaks)
 Advantage: Can be parallelized during backfill
 Disadvantage: Process historical data
 [Way 1 SQL](SQL/Slow-changing-dimension_way_1.sql)
@@ -67,6 +88,8 @@ We union historical record, unchanged records from last season, changed records 
 Disadvantage: Difficult to backfill
 Advantage: Process only the incremental data
 [Way 2 SQL](SQL/Slow-changing-dimension_way_2.sql)
+
+
 
 
 ## Idempotent best practice
